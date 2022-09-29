@@ -17,7 +17,7 @@ const sendVerificationEmail = async (
 
   const msg = {
     to: userEmail,
-    from: "metusharjain@gmail.com",
+    from: process.env.EMAIL_SENDER,
     subject: "Verify Email - MealApp",
     text: "Verify Email",
     html,

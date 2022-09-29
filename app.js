@@ -8,9 +8,8 @@ const app = express();
 
 // other packages
 
-// const morgan = require('morgan');
-const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const rateLimiter = require("express-rate-limit");
 const helmet = require("helmet");
 const xss = require("xss-clean");
@@ -29,6 +28,8 @@ const mealRoutes = require("./routes/mealRoutes");
 
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
+
+app.use(express.static("./public"));
 
 app.use(
   rateLimiter({
