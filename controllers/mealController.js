@@ -42,9 +42,22 @@ const createMeal = async (req, res) => {
 };
 
 const showMeals = async (req, res) => {
-  const userId = req.user.userId;
+  const { hashtags, foodItems } = req.query;
 
-  const meals = await MealModel.find({ userId });
+  const queryObj = { userId: req.user.userId };
+
+  if (hashtags) {
+    queryObj["hashtags"] = hashtags;
+  }
+
+  if (foodItems) {
+    queryObj["foodItems"] = foodItems;
+  }
+
+  const meals = await MealModel.find(queryObj).populate({
+    path: "userId",
+    select: "name",
+  });
 
   if (!meals || meals.length === 0) {
     throw new CustomAPIError.NotFoundError(
@@ -52,7 +65,7 @@ const showMeals = async (req, res) => {
     );
   }
 
-  res.status(StatusCodes.OK).json({ meals });
+  res.status(StatusCodes.OK).json({ count: meals.length, meals });
 };
 
 const showAllMeals = async (req, res) => {
@@ -68,13 +81,16 @@ const showAllMeals = async (req, res) => {
     queryObj["foodItems"] = foodItems;
   }
 
-  const meals = await MealModel.find(queryObj);
+  const meals = await MealModel.find(queryObj).populate({
+    path: "userId",
+    select: "name",
+  });
 
   if (!meals || meals.length === 0) {
     throw new CustomAPIError.NotFoundError(`No meals found`);
   }
 
-  res.status(StatusCodes.OK).json({ meals });
+  res.status(StatusCodes.OK).json({ count: meals.length, meals });
 };
 
 const listHashtags = async (req, res) => {

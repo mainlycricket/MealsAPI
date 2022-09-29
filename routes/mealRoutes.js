@@ -12,9 +12,7 @@ router.get("/showAll?", showAllMeals);
 router.get("/hashtags", listHashtags);
 router.get("/foodItems", listFoodItems);
 
-router
-  .route("/")
-  .post(authenticationMiddleware, createMeal)
-  .get(authenticationMiddleware, showMeals);
+router.post("/", authenticationMiddleware, createMeal);
+router.get("/?", authenticationMiddleware, showMeals);
 
 module.exports = router;
