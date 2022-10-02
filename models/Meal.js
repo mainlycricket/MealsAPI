@@ -16,8 +16,8 @@ const MealSchema = new mongoose.Schema(
     foodItems: {
       type: [String],
       enum: {
-        values: ["Pizza", "Burger", "Toast"],
-        message: "Please choose given items only",
+        values: ["pizza", "burger", "toast"],
+        message: "Please choose given food items only",
       },
     },
   },

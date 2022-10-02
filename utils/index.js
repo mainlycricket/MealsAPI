@@ -1,4 +1,7 @@
-const sendVerificationEmail = require("../utils/sendVerificationEmail");
+const {
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+} = require("../utils/sendVerificationEmail");
 const {
   createJWT,
   createUserToken,
@@ -8,6 +11,7 @@ const {
 
 module.exports = {
   sendVerificationEmail,
+  sendResetPasswordEmail,
   createJWT,
   createUserToken,
   attachCookieToResponse,

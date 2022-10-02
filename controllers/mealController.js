@@ -19,10 +19,12 @@ const createMeal = async (req, res) => {
     throw new CustomAPIError.BadRequestError("Invalid data");
   }
 
-  console.log(hashtags);
-
   const sanitizedHashtags = hashtags.map(
-    (hashtag) => hashtag.toLowerCase().trim().replace(/[\W]/g, "") // sanitising data
+    (hashtag) => hashtag.trim().toLowerCase().replace(/[\W]/g, "") // sanitising data
+  );
+
+  const sanitizedFooditems = foodItems.map((foodItem) =>
+    foodItem.trim().toLowerCase()
   );
 
   for (let hashtag of sanitizedHashtags) {
@@ -34,7 +36,7 @@ const createMeal = async (req, res) => {
 
   const meal = await MealModel.create({
     hashtags: sanitizedHashtags,
-    foodItems,
+    foodItems: sanitizedFooditems,
     userId: req.user.userId,
   });
 
@@ -47,11 +49,11 @@ const showMeals = async (req, res) => {
   const queryObj = { userId: req.user.userId };
 
   if (hashtags) {
-    queryObj["hashtags"] = hashtags;
+    queryObj["hashtags"] = hashtags.trim().toLowerCase();
   }
 
   if (foodItems) {
-    queryObj["foodItems"] = foodItems;
+    queryObj["foodItems"] = foodItems.trim().toLowerCase();
   }
 
   const meals = await MealModel.find(queryObj).populate({
@@ -74,11 +76,11 @@ const showAllMeals = async (req, res) => {
   const queryObj = {};
 
   if (hashtags) {
-    queryObj["hashtags"] = hashtags;
+    queryObj["hashtags"] = hashtags.trim().toLowerCase();
   }
 
   if (foodItems) {
-    queryObj["foodItems"] = foodItems;
+    queryObj["foodItems"] = foodItems.trim().toLowerCase();
   }
 
   const meals = await MealModel.find(queryObj).populate({
@@ -94,7 +96,7 @@ const showAllMeals = async (req, res) => {
 };
 
 const listHashtags = async (req, res) => {
-  const hashtags = await HashtagsModel.find({});
+  const hashtags = await HashtagsModel.find({}).select("hashtag");
 
   if (!hashtags) {
     throw new CustomAPIError.NotFoundError("No hashtags found");

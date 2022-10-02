@@ -21,6 +21,12 @@ const UserSchema = new mongoose.Schema({
     },
   },
 
+  role: {
+    type: String,
+    // enum: ['user', 'admin']    // can add when admin role is required
+    default: "user",
+  },
+
   password: {
     type: String,
     required: [true, "Please provide password"],
@@ -37,6 +43,14 @@ const UserSchema = new mongoose.Schema({
   },
 
   verified: {
+    type: Date,
+  },
+
+  passwordToken: {
+    type: String,
+  },
+
+  passwordTokenExpirationDate: {
     type: Date,
   },
 });

@@ -1,11 +1,11 @@
 {
   "name": "meal-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Meals API",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "run": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
@@ -33,5 +33,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
+  }, 
+  "engines": {
+    "node": "16.16"
   }
 }

@@ -6,6 +6,7 @@ const crypto = require("crypto");
 
 const {
   sendVerificationEmail,
+  sendResetPasswordEmail,
   createUserToken,
   attachCookieToResponse,
 } = require("../utils");
@@ -98,9 +99,74 @@ const logout = async (req, res) => {
     .json({ success: true, msg: "logged out successfully" });
 };
 
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email || !email.trim()) {
+    throw new CustomAPIError.BadRequestError("Please provide an email");
+  }
+
+  const user = await UserModel.findOne({ email });
+
+  if (user) {
+    const passwordToken = crypto.randomBytes(50).toString("hex");
+    await sendResetPasswordEmail(user.name, user.email, passwordToken);
+
+    const duration = 15 * 60 * 1000; // 15 minutes
+
+    user.passwordToken = passwordToken;
+    user.passwordTokenExpirationDate = new Date(Date.now() + duration);
+
+    await user.save();
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      msg: "Please check your email to reset password",
+    });
+  }
+
+  res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({ success: false, msg: "Something went wrong!" });
+};
+
+const resetPassword = async (req, res) => {
+  const { passwordToken, email } = req.query;
+
+  const { password } = req.body;
+
+  if (!passwordToken || !email || !password || !password.trim()) {
+    throw new CustomAPIError.BadRequestError("Details are missing");
+  }
+
+  const user = await UserModel.findOne({ email });
+
+  if (
+    user &&
+    passwordToken === user.passwordToken &&
+    user.passwordTokenExpirationDate > new Date()
+  ) {
+    user.password = password;
+    user.passwordToken = null;
+    user.passwordTokenExpirationDate = null;
+    await user.save();
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      msg: "Password updated",
+    });
+  }
+
+  res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({ success: false, msg: "Password reset failed" });
+};
+
 module.exports = {
   register,
   verifyEmail,
   login,
   logout,
+  forgotPassword,
+  resetPassword,
 };
